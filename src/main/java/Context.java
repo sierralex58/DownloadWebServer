@@ -6,34 +6,24 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class Context {
-    protected File path;
-    protected File[] files;
-    protected HttpServer server;
 
-    public Context(String spath) throws IOException {
-        this.path = new File(spath);
+    public Context(Server server)  {
+        File[] files = DownloadHTTPServer.path.listFiles();
 
-        server = HttpServer.create(new InetSocketAddress(8001), 0);
+        if(DownloadHTTPServer.path.isDirectory()) {
 
-        if(path.isDirectory()) {
-            files = path.listFiles();
-
-            server.createContext("/", new InfoHandler(path));
-            server.createContext("/info", new InfoHandler(path));
+            server.getServer().createContext("/", new InfoHandler(DownloadHTTPServer.path));
+            server.getServer().createContext("/info", new InfoHandler(DownloadHTTPServer.path));
             for (File file : files) {
-                server.createContext("/" + file.getName(), new GetHandler(path));
+                server.getServer().createContext("/" + file.getName(), new GetHandler(DownloadHTTPServer.path));
             }
         } else {
-            server.createContext("/", new InfoHandler(path));
-            server.createContext("/info", new InfoHandler(path));
-            server.createContext("/" + path.getName(), new GetHandler(path));
+            server.getServer().createContext("/", new InfoHandler(DownloadHTTPServer.path));
+            server.getServer().createContext("/info", new InfoHandler(DownloadHTTPServer.path));
+            server.getServer().createContext("/" + DownloadHTTPServer.path.getName(), new GetHandler(DownloadHTTPServer.path));
         }
-        server.setExecutor(null); // creates a default executor
 
     }
 
-    public void serve() {
-        System.out.println("Serving " + path.getAbsolutePath() + " on port 8001");
-        server.start();
-    }
+
 }

@@ -15,17 +15,21 @@ import com.sun.net.httpserver.Headers;
 
 public class DownloadHTTPServer {
 
+    public static File path;
 
 
     public static void main(String[] args) throws Exception {
         Context ctx;
+        Server server;
 
         if(args.length == 1) {
-            ctx = new Context(args[0]);
-
-            ctx.serve();
+            path = new File(args[0]);
+            server = new Server();
+            ctx = new Context(server);
+            server.serve();
         } else {
             System.err.println("usage: DownloadHTTPServer <filepath>");
         }
     }
+
 }
